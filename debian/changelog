@@ -1,0 +1,26 @@
+libzstd (0.5.1-1) unstable; urgency=medium
+
+  [ Kevin Murray ]
+  * New upstream version (fixes a FTBFS)
+  * Package pkgconfig file (Closes: #813854)
+  * Fix path to tagged archives in d/watch
+  * Add vcs URLs
+  * Bump to standards version 3.9.7
+
+  [ Mattia Rizzolo ]
+  * debian/rules: Remove a lot of uneeded comments and lines
+
+ -- Kevin Murray <spam@kdmurray.id.au>  Thu, 17 Mar 2016 12:59:04 +0000
+
+libzstd (0.4.7-1) unstable; urgency=low
+
+  * New upstream version
+  * Remove build date encoding to enable reproducible build
+
+ -- Kevin Murray <spam@kdmurray.id.au>  Wed, 03 Feb 2016 11:26:21 +0200
+
+libzstd (0.4.5-1) unstable; urgency=low
+
+  * Initial release (Closes: #806767)
+
+ -- Kevin Murray <spam@kdmurray.id.au>  Tue, 01 Dec 2015 13:54:36 +1100

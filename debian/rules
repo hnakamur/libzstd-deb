@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+export DH_VERBOSE = 1
+
+%:
+	dh $@ --parallel
+
+override_dh_install:
+	# Call d-shlibmove to comply with library packaging guide
+	d-shlibmove --commit \
+				--multiarch \
+				--devunversioned \
+				--exclude-la \
+				--movedev "debian/tmp/usr/include/*" usr/include \
+				--movedev "debian/tmp/usr/lib/pkgconfig/*" usr/lib/$(DEB_HOST_MULTIARCH)/pkgconfig \
+				debian/tmp/usr/lib/lib*.so
+	dh_install

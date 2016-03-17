@@ -1,0 +1,31 @@
+From: Kevin Murray <spam@kdmurray.id.au>
+Date: Tue, 8 Dec 2015 11:50:58 +1100
+Subject: Use prefix of /usr not /usr/local
+
+---
+ lib/Makefile      | 2 +-
+ programs/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -42,7 +42,7 @@
+ VERSION?= $(LIBVER)
+ 
+ DESTDIR?=
+-PREFIX ?= /usr/local
++PREFIX ?= /usr
+ CPPFLAGS= -I.
+ CFLAGS ?= -O3
+ CFLAGS += -std=c99 -Wall -Wextra -Wundef -Wshadow -Wcast-qual -Wcast-align -Wstrict-prototypes -Wstrict-aliasing=1
+--- a/programs/Makefile
++++ b/programs/Makefile
+@@ -43,7 +43,7 @@
+ VERSION?= $(LIBVER)
+ 
+ DESTDIR?=
+-PREFIX ?= /usr/local
++PREFIX ?= /usr
+ CPPFLAGS= -I../lib -DZSTD_VERSION=\"$(VERSION)\"
+ CFLAGS ?= -O3  # -falign-loops=32   # not always beneficial
+ CFLAGS += -std=c99 -Wall -Wextra -Wcast-qual -Wcast-align -Wshadow -Wstrict-aliasing=1 -Wswitch-enum -Wstrict-prototypes -Wundef

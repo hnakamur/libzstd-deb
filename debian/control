@@ -1,0 +1,49 @@
+Source: libzstd
+Priority: optional
+Maintainer: Debian Med Packaging <debian-med-packaging@lists.alioth.debian.org>
+Uploaders: Kevin Murray <spam@kdmurray.id.au>,
+Build-Depends:  debhelper (>= 9),
+                d-shlibs,
+Standards-Version: 3.9.7
+Section: libs
+Homepage: https://github.com/Cyan4973/zstd
+Vcs-Git: https://anonscm.debian.org/git/debian-med/libzstd.git
+Vcs-Browser: https://anonscm.debian.org/git/debian-med/libzstd.git
+
+Package: libzstd-dev
+Architecture: any
+Section: libdevel
+Depends: libzstd0 (= ${binary:Version}),
+         ${misc:Depends},
+Description: fast lossless compression algorithm -- development files
+ Zstd, short for Zstandard, is a fast lossless compression algorithm, targeting
+ real-time compression scenarios at zlib-level compression ratio.
+ .
+ This package contains the headers and static library.
+
+
+Package: libzstd0
+Architecture: any
+Section: libs
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+Description: fast lossless compression algorithm
+ Zstd, short for Zstandard, is a fast lossless compression algorithm, targeting
+ real-time compression scenarios at zlib-level compression ratio.
+ .
+ This package contains the shared library.
+
+
+Package: zstd
+Architecture: any
+Section: utils
+Depends: libzstd0 (= ${binary:Version}),
+         ${shlibs:Depends},
+         ${misc:Depends},
+Description: fast lossless compression algorithm -- CLI tool
+ Zstd, short for Zstandard, is a fast lossless compression algorithm, targeting
+ real-time compression scenarios at zlib-level compression ratio.
+ .
+ This package contains the CLI program implementing zstd.
+
+

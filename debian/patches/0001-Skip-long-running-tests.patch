@@ -1,0 +1,25 @@
+From: Kevin Murray <spam@kdmurray.id.au>
+Date: Tue, 1 Dec 2015 14:40:58 +1100
+Subject: Skip long-running tests
+
+---
+ programs/Makefile | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+--- a/programs/Makefile
++++ b/programs/Makefile
+@@ -177,11 +177,11 @@
+ 	[ -f $(DESTDIR)$(MANDIR)/zstd.1 ] && rm -f $(DESTDIR)$(MANDIR)/zstd.1
+ 	@echo zstd programs successfully uninstalled
+ 
+-test: test-zstd test-fullbench test-fuzzer test-zbuff
++test: test-zstd
+ 
+-test32: test-zstd32 test-fullbench32 test-fuzzer32 test-zbuff32
++test32: test-zstd32
+ 
+-test-all: test test32 valgrindTest
++test-all: test test32
+ 
+ zstd-playTests: datagen
+ 	ZSTD=$(ZSTD) ./playTests.sh $(ZSTDRTTEST)
