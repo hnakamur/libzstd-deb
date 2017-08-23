@@ -1,27 +1,18 @@
 /*
-  fileio.h - file i/o handler
-  Copyright (C) Yann Collet 2013-2016
+ * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under both the BSD-style license (found in the
+ * LICENSE file in the root directory of this source tree) and the GPLv2 (found
+ * in the COPYING file in the root directory of this source tree).
+ */
 
-  GPL v2 License
 
-  This program is free software; you can redistribute it and/or modify
-  it under the terms of the GNU General Public License as published by
-  the Free Software Foundation; either version 2 of the License, or
-  (at your option) any later version.
+#ifndef FILEIO_H_23981798732
+#define FILEIO_H_23981798732
 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-  GNU General Public License for more details.
-
-  You should have received a copy of the GNU General Public License along
-  with this program; if not, write to the Free Software Foundation, Inc.,
-  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-  You can contact the author at :
-  - ZSTD homepage : http://www.zstd.net/
-*/
-#pragma once
+#define ZSTD_STATIC_LINKING_ONLY   /* ZSTD_compressionParameters */
+#include "zstd.h"                  /* ZSTD_* */
 
 #if defined (__cplusplus)
 extern "C" {
@@ -31,43 +22,65 @@ extern "C" {
 /* *************************************
 *  Special i/o constants
 **************************************/
-#define nullString "null"
-#define stdinmark "stdin"
-#define stdoutmark "stdout"
+#define stdinmark  "/*stdin*\\"
+#define stdoutmark "/*stdout*\\"
 #ifdef _WIN32
 #  define nulmark "nul"
 #else
 #  define nulmark "/dev/null"
 #endif
+#define LZMA_EXTENSION  ".lzma"
+#define XZ_EXTENSION    ".xz"
+#define GZ_EXTENSION    ".gz"
+#define ZSTD_EXTENSION  ".zst"
+#define LZ4_EXTENSION   ".lz4"
 
 
-/* *************************************
+/*-*************************************
+*  Types
+***************************************/
+typedef enum { FIO_zstdCompression, FIO_gzipCompression, FIO_xzCompression, FIO_lzmaCompression, FIO_lz4Compression } FIO_compressionType_t;
+
+
+/*-*************************************
 *  Parameters
 ***************************************/
+void FIO_setCompressionType(FIO_compressionType_t compressionType);
 void FIO_overwriteMode(void);
 void FIO_setNotificationLevel(unsigned level);
+void FIO_setSparseWrite(unsigned sparse);  /**< 0: no sparse; 1: disable on stdout; 2: always enabled */
+void FIO_setDictIDFlag(unsigned dictIDFlag);
+void FIO_setChecksumFlag(unsigned checksumFlag);
+void FIO_setRemoveSrcFile(unsigned flag);
+void FIO_setMemLimit(unsigned memLimit);
+void FIO_setNbThreads(unsigned nbThreads);
+void FIO_setBlockSize(unsigned blockSize);
+void FIO_setOverlapLog(unsigned overlapLog);
 
 
-/* *************************************
+/*-*************************************
 *  Single File functions
 ***************************************/
 /** FIO_compressFilename() :
     @return : 0 == ok;  1 == pb with src file. */
-int FIO_compressFilename (const char* outfilename, const char* infilename, const char* dictFileName, int compressionLevel);
+int FIO_compressFilename (const char* outfilename, const char* infilename, const char* dictFileName,
+                          int compressionLevel, ZSTD_compressionParameters* comprParams);
 
 /** FIO_decompressFilename() :
     @return : 0 == ok;  1 == pb with src file. */
 int FIO_decompressFilename (const char* outfilename, const char* infilename, const char* dictFileName);
 
+int FIO_listMultipleFiles(unsigned numFiles, const char** filenameTable, int displayLevel);
 
-/* *************************************
+/*-*************************************
 *  Multiple File functions
 ***************************************/
 /** FIO_compressMultipleFilenames() :
     @return : nb of missing files */
 int FIO_compressMultipleFilenames(const char** srcNamesTable, unsigned nbFiles,
                                   const char* suffix,
-                                  const char* dictFileName, int compressionLevel);
+                                  const char* dictFileName, int compressionLevel,
+                                  ZSTD_compressionParameters* comprParams);
 
 /** FIO_decompressMultipleFilenames() :
     @return : nb of missing or skipped files */
@@ -79,3 +92,5 @@ int FIO_decompressMultipleFilenames(const char** srcNamesTable, unsigned nbFiles
 #if defined (__cplusplus)
 }
 #endif
+
+#endif  /* FILEIO_H_23981798732 */
