@@ -1,36 +1,29 @@
 /*
-    bench.h - Demo program to benchmark open-source compression algorithm
-    Copyright (C) Yann Collet 2012-2015
-
-    GPL v2 License
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License along
-    with this program; if not, write to the Free Software Foundation, Inc.,
-    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-    You can contact the author at :
-    - LZ4 source repository : http://code.google.com/p/lz4/
-    - LZ4 public forum : https://group.google.com/forum/#!forum/lz4c
-*/
-#pragma once
+ * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under both the BSD-style license (found in the
+ * LICENSE file in the root directory of this source tree) and the GPLv2 (found
+ * in the COPYING file in the root directory of this source tree).
+ */
 
 
-/* Main function */
-int BMK_benchFiles(const char** fileNamesTable, unsigned nbFiles,
-                   const char* dictFileName, int cLevel);
+#ifndef BENCH_H_121279284357
+#define BENCH_H_121279284357
+
+#include <stddef.h>   /* size_t */
+#define ZSTD_STATIC_LINKING_ONLY   /* ZSTD_compressionParameters */
+#include "zstd.h"     /* ZSTD_compressionParameters */
+
+int BMK_benchFiles(const char** fileNamesTable, unsigned nbFiles,const char* dictFileName,
+                   int cLevel, int cLevelLast, ZSTD_compressionParameters* compressionParams, int setRealTimePrio);
 
 /* Set Parameters */
-void BMK_SetNbIterations(int nbLoops);
-void BMK_SetBlockSize(size_t blockSize);
+void BMK_setNbSeconds(unsigned nbLoops);
+void BMK_setBlockSize(size_t blockSize);
+void BMK_setNbThreads(unsigned nbThreads);
+void BMK_setNotificationLevel(unsigned level);
+void BMK_setAdditionalParam(int additionalParam);
+void BMK_setDecodeOnlyMode(unsigned decodeFlag);
 
-
+#endif   /* BENCH_H_121279284357 */
