@@ -121,7 +121,7 @@ else
 INSTALL ?= install
 endif
 
-PREFIX     ?= /usr/local
+PREFIX     ?= /usr
 DESTDIR    ?=
 LIBDIR     ?= $(PREFIX)/lib
 INCLUDEDIR ?= $(PREFIX)/include
