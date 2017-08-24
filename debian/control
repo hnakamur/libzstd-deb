@@ -13,7 +13,7 @@ Vcs-Browser: https://anonscm.debian.org/git/debian-med/libzstd.git
 Package: libzstd-dev
 Architecture: any
 Section: libdevel
-Depends: libzstd0 (= ${binary:Version}),
+Depends: libzstd1 (= ${binary:Version}),
          ${misc:Depends},
 Description: fast lossless compression algorithm -- development files
  Zstd, short for Zstandard, is a fast lossless compression algorithm, targeting
@@ -22,7 +22,7 @@ Description: fast lossless compression algorithm -- development files
  This package contains the headers and static library.
 
 
-Package: libzstd0
+Package: libzstd1
 Architecture: any
 Section: libs
 Depends: ${shlibs:Depends},
@@ -37,7 +37,7 @@ Description: fast lossless compression algorithm
 Package: zstd
 Architecture: any
 Section: utils
-Depends: libzstd0 (= ${binary:Version}),
+Depends: libzstd1 (= ${binary:Version}),
          ${shlibs:Depends},
          ${misc:Depends},
 Description: fast lossless compression algorithm -- CLI tool
