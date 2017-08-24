@@ -1,0 +1,35 @@
+From: Hiroaki Nakamura <hnakamur@gmail.com>
+Date: Thu, 24 Aug 2017 09:08:54 +0900
+Subject: Use prefix of /usr not /usr/local
+
+---
+ lib/Makefile      | 2 +-
+ programs/Makefile | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/lib/Makefile b/lib/Makefile
+index 5845cf1..5ef7d0f 100644
+--- a/lib/Makefile
++++ b/lib/Makefile
+@@ -121,7 +121,7 @@ else
+ INSTALL ?= install
+ endif
+ 
+-PREFIX     ?= /usr/local
++PREFIX     ?= /usr
+ DESTDIR    ?=
+ LIBDIR     ?= $(PREFIX)/lib
+ INCLUDEDIR ?= $(PREFIX)/include
+diff --git a/programs/Makefile b/programs/Makefile
+index c5469cf..190512a 100644
+--- a/programs/Makefile
++++ b/programs/Makefile
+@@ -261,7 +261,7 @@ else
+ INSTALL ?= install
+ endif
+ 
+-PREFIX  ?= /usr/local
++PREFIX  ?= /usr
+ DESTDIR ?=
+ BINDIR  ?= $(PREFIX)/bin
+ 

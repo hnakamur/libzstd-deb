@@ -1,5 +1,2 @@
-0001-Skip-long-running-tests.patch
-0002-Build-lib-by-default.patch
-0003-Use-prefix-of-usr-not-usr-local.patch
-0004-Add-symlinks-for-extra-manpages.patch
-0005-Append-to-CPPFLAGS-don-t-overwrite.patch
+0001-Use-prefix-of-usr-not-usr-local.patch
+0002-Append-to-CLAGS-don-t-overwrite.patch
