@@ -1,4 +1,4 @@
- __Zstandard__, or `zstd` as short version, is a fast lossless compression algorithm,
+__Zstandard__, or `zstd` as short version, is a fast lossless compression algorithm,
  targeting real-time compression scenarios at zlib-level and better compression ratios.
 
 It is provided as an open-source BSD-licensed **C** library,
@@ -8,7 +8,8 @@ you can consult a list of known ports on [Zstandard homepage](http://www.zstd.ne
 
 | dev branch status |
 |-------------------|
-| [![Build Status][travisDevBadge]][travisLink]   [![Build status][AppveyorDevBadge]][AppveyorLink]   [![Build status][CircleDevBadge]][CircleLink]
+| [![Build Status][travisDevBadge]][travisLink] [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fhnakamur%2Flibzstd-deb.svg?type=shield)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fhnakamur%2Flibzstd-deb?ref=badge_shield)
+  [![Build status][AppveyorDevBadge]][AppveyorLink]   [![Build status][CircleDevBadge]][CircleLink]
 
 [travisDevBadge]: https://travis-ci.org/facebook/zstd.svg?branch=dev "Continuous Integration test suite"
 [travisLink]: https://travis-ci.org/facebook/zstd
@@ -140,6 +141,9 @@ Zstandard is considered safe for production environments.
 ### License
 
 Zstandard is dual-licensed under [BSD](LICENSE) and [GPLv2](COPYING).
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fhnakamur%2Flibzstd-deb.svg?type=large)](https://app.fossa.io/projects/git%2Bhttps%3A%2F%2Fgithub.com%2Fhnakamur%2Flibzstd-deb?ref=badge_large)
 
 ### Contributing
 
