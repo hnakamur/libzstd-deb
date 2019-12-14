@@ -5,6 +5,7 @@
  * This source code is licensed under both the BSD-style license (found in the
  * LICENSE file in the root directory of this source tree) and the GPLv2 (found
  * in the COPYING file in the root directory of this source tree).
+ * You may select, at your option, one of the above-listed licenses.
  */
 
 
@@ -30,6 +31,7 @@ static const void *symbols[] = {
   &ZSTD_getFrameContentSize,
   &ZSTD_maxCLevel,
   &ZSTD_compressBound,
+  &ZSTD_decompressBound,
   &ZSTD_isError,
   &ZSTD_getErrorName,
   &ZSTD_createCCtx,
@@ -88,7 +90,6 @@ static const void *symbols[] = {
   &ZSTD_sizeof_CStream,
   &ZSTD_createDStream_advanced,
   &ZSTD_initDStream_usingDict,
-  &ZSTD_setDStreamParameter,
   &ZSTD_initDStream_usingDDict,
   &ZSTD_resetDStream,
   &ZSTD_sizeof_DStream,
@@ -143,6 +144,8 @@ static const void *symbols[] = {
 /* zdict.h: advanced functions */
   &ZDICT_trainFromBuffer_cover,
   &ZDICT_optimizeTrainFromBuffer_cover,
+  &ZDICT_trainFromBuffer_fastCover,
+  &ZDICT_optimizeTrainFromBuffer_fastCover,
   &ZDICT_finalizeDictionary,
   &ZDICT_trainFromBuffer_legacy,
   &ZDICT_addEntropyTablesFromBuffer,
