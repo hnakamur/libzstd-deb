@@ -1,3 +1,4 @@
-version=3
-opts="filenamemangle=s/(?:.*?)?v?(\d[\d.]*)\.tar\.gz/libzstd_$1.tar.gz/" \
-  https://github.com/Cyan4973/zstd/releases .*/archive/v?(\d\S*)\.tar\.gz
+version=4
+
+opts="repacksuffix=+dfsg,dversionmangle=s/\+dfsg\d*//g,repack,compression=xz" \
+  https://github.com/facebook/zstd/releases .*/archive/v?@ANY_VERSION@@ARCHIVE_EXT@
