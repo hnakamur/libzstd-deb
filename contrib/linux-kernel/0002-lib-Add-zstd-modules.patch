@@ -1,10 +1,10 @@
-From b7f044163968d724be55bf4841fd80babe036dc2 Mon Sep 17 00:00:00 2001
+From 2b29ec569f8438a0307debd29873859ca6d407fc Mon Sep 17 00:00:00 2001
 From: Nick Terrell <terrelln@fb.com>
 Date: Mon, 17 Jul 2017 17:08:19 -0700
 Subject: [PATCH v5 2/5] lib: Add zstd modules
 
 Add zstd compression and decompression kernel modules.
-zstd offers a wide varity of compression speed and quality trade-offs.
+zstd offers a wide variety of compression speed and quality trade-offs.
 It can compress at speeds approaching lz4, and quality approaching lzma.
 zstd decompressions at speeds more than twice as fast as zlib, and
 decompression speed remains roughly the same across all compression levels.
@@ -21,7 +21,7 @@ will be easier to keep the kernel zstd up to date.
 I benchmarked zstd compression as a special character device. I ran zstd
 and zlib compression at several levels, as well as performing no
 compression, which measure the time spent copying the data to kernel space.
-Data is passed to the compresser 4096 B at a time. The benchmark file is
+Data is passed to the compressor 4096 B at a time. The benchmark file is
 located in the upstream zstd source repository under
 `contrib/linux-kernel/zstd_compress_test.c` [2].
 
@@ -86,7 +86,7 @@ Tested in userland using the test-suite in the zstd repo under
 `contrib/linux-kernel/test/UserlandTest.cpp` [5] by mocking the kernel
 functions. Fuzz tested using libfuzzer [6] with the fuzz harnesses under
 `contrib/linux-kernel/test/{RoundTripCrash.c,DecompressCrash.c}` [7] [8]
-with ASAN, UBSAN, and MSAN. Additionaly, it was tested while testing the
+with ASAN, UBSAN, and MSAN. Additionally, it was tested while testing the
 BtrFS and SquashFS patches coming next.
 
 [1] https://clang.llvm.org/docs/ClangFormat.html
@@ -121,26 +121,26 @@ v4 -> v5:
 - Fix rare compression bug from upstream commit 308047eb5d
 - Fix bug introduced in v3 when working around the gcc-7 bug
 
- include/linux/zstd.h      | 1157 +++++++++++++++
+ include/linux/zstd.h      | 1155 +++++++++++++++
  lib/Kconfig               |    8 +
  lib/Makefile              |    2 +
  lib/zstd/Makefile         |   18 +
  lib/zstd/bitstream.h      |  374 +++++
- lib/zstd/compress.c       | 3484 +++++++++++++++++++++++++++++++++++++++++++++
- lib/zstd/decompress.c     | 2528 ++++++++++++++++++++++++++++++++
+ lib/zstd/compress.c       | 3482 +++++++++++++++++++++++++++++++++++++++++++++
+ lib/zstd/decompress.c     | 2526 ++++++++++++++++++++++++++++++++
  lib/zstd/entropy_common.c |  243 ++++
- lib/zstd/error_private.h  |   53 +
+ lib/zstd/error_private.h  |   51 +
  lib/zstd/fse.h            |  575 ++++++++
  lib/zstd/fse_compress.c   |  795 +++++++++++
  lib/zstd/fse_decompress.c |  332 +++++
  lib/zstd/huf.h            |  212 +++
  lib/zstd/huf_compress.c   |  770 ++++++++++
  lib/zstd/huf_decompress.c |  960 +++++++++++++
- lib/zstd/mem.h            |  151 ++
- lib/zstd/zstd_common.c    |   75 +
- lib/zstd/zstd_internal.h  |  263 ++++
- lib/zstd/zstd_opt.h       | 1014 +++++++++++++
- 19 files changed, 13014 insertions(+)
+ lib/zstd/mem.h            |  149 ++
+ lib/zstd/zstd_common.c    |   73 +
+ lib/zstd/zstd_internal.h  |  261 ++++
+ lib/zstd/zstd_opt.h       | 1012 +++++++++++++
+ 19 files changed, 12998 insertions(+)
  create mode 100644 include/linux/zstd.h
  create mode 100644 lib/zstd/Makefile
  create mode 100644 lib/zstd/bitstream.h
@@ -161,18 +161,16 @@ v4 -> v5:
 
 diff --git a/include/linux/zstd.h b/include/linux/zstd.h
 new file mode 100644
-index 0000000..249575e
+index 0000000..305efd0
 --- /dev/null
 +++ b/include/linux/zstd.h
-@@ -0,0 +1,1157 @@
+@@ -0,0 +1,1155 @@
 +/*
 + * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
 + * All rights reserved.
 + *
 + * This source code is licensed under the BSD-style license found in the
 + * LICENSE file in the root directory of https://github.com/facebook/zstd.
-+ * An additional grant of patent rights can be found in the PATENTS file in the
-+ * same directory.
 + *
 + * This program is free software; you can redistribute it and/or modify it under
 + * the terms of the GNU General Public License version 2 as published by the
@@ -1760,18 +1758,16 @@ index 0000000..a826b99
 +#endif /* BITSTREAM_H_MODULE */
 diff --git a/lib/zstd/compress.c b/lib/zstd/compress.c
 new file mode 100644
-index 0000000..f9166cf
+index 0000000..ff18ae6
 --- /dev/null
 +++ b/lib/zstd/compress.c
-@@ -0,0 +1,3484 @@
+@@ -0,0 +1,3482 @@
 +/**
 + * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
 + * All rights reserved.
 + *
 + * This source code is licensed under the BSD-style license found in the
 + * LICENSE file in the root directory of https://github.com/facebook/zstd.
-+ * An additional grant of patent rights can be found in the PATENTS file in the
-+ * same directory.
 + *
 + * This program is free software; you can redistribute it and/or modify it under
 + * the terms of the GNU General Public License version 2 as published by the
@@ -4204,14 +4200,14 @@ index 0000000..f9166cf
 +	BYTE const windowLogByte = (BYTE)((params.cParams.windowLog - ZSTD_WINDOWLOG_ABSOLUTEMIN) << 3);
 +	U32 const fcsCode =
 +	    params.fParams.contentSizeFlag ? (pledgedSrcSize >= 256) + (pledgedSrcSize >= 65536 + 256) + (pledgedSrcSize >= 0xFFFFFFFFU) : 0; /* 0-3 */
-+	BYTE const frameHeaderDecriptionByte = (BYTE)(dictIDSizeCode + (checksumFlag << 2) + (singleSegment << 5) + (fcsCode << 6));
++	BYTE const frameHeaderDescriptionByte = (BYTE)(dictIDSizeCode + (checksumFlag << 2) + (singleSegment << 5) + (fcsCode << 6));
 +	size_t pos;
 +
 +	if (dstCapacity < ZSTD_frameHeaderSize_max)
 +		return ERROR(dstSize_tooSmall);
 +
 +	ZSTD_writeLE32(dst, ZSTD_MAGICNUMBER);
-+	op[4] = frameHeaderDecriptionByte;
++	op[4] = frameHeaderDescriptionByte;
 +	pos = 5;
 +	if (!singleSegment)
 +		op[pos++] = windowLogByte;
@@ -5250,18 +5246,16 @@ index 0000000..f9166cf
 +MODULE_DESCRIPTION("Zstd Compressor");
 diff --git a/lib/zstd/decompress.c b/lib/zstd/decompress.c
 new file mode 100644
-index 0000000..b178467
+index 0000000..72df4828
 --- /dev/null
 +++ b/lib/zstd/decompress.c
-@@ -0,0 +1,2528 @@
+@@ -0,0 +1,2526 @@
 +/**
 + * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
 + * All rights reserved.
 + *
 + * This source code is licensed under the BSD-style license found in the
 + * LICENSE file in the root directory of https://github.com/facebook/zstd.
-+ * An additional grant of patent rights can be found in the PATENTS file in the
-+ * same directory.
 + *
 + * This program is free software; you can redistribute it and/or modify it under
 + * the terms of the GNU General Public License version 2 as published by the
@@ -8033,18 +8027,16 @@ index 0000000..2b0a643
 +}
 diff --git a/lib/zstd/error_private.h b/lib/zstd/error_private.h
 new file mode 100644
-index 0000000..1a60b31
+index 0000000..2062ff0
 --- /dev/null
 +++ b/lib/zstd/error_private.h
-@@ -0,0 +1,53 @@
+@@ -0,0 +1,51 @@
 +/**
 + * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
 + * All rights reserved.
 + *
 + * This source code is licensed under the BSD-style license found in the
 + * LICENSE file in the root directory of https://github.com/facebook/zstd.
-+ * An additional grant of patent rights can be found in the PATENTS file in the
-+ * same directory.
 + *
 + * This program is free software; you can redistribute it and/or modify it under
 + * the terms of the GNU General Public License version 2 as published by the
@@ -8820,8 +8812,8 @@ index 0000000..ef3d174
 +		U32 position = 0;
 +		U32 symbol;
 +		for (symbol = 0; symbol <= maxSymbolValue; symbol++) {
-+			int nbOccurences;
-+			for (nbOccurences = 0; nbOccurences < normalizedCounter[symbol]; nbOccurences++) {
++			int nbOccurrences;
++			for (nbOccurrences = 0; nbOccurrences < normalizedCounter[symbol]; nbOccurrences++) {
 +				tableSymbol[position] = (FSE_FUNCTION_TYPE)symbol;
 +				position = (position + step) & tableMask;
 +				while (position > highThreshold)
@@ -9952,7 +9944,7 @@ index 0000000..2143da2
 +	HUF_repeat_none,  /**< Cannot use the previous table */
 +	HUF_repeat_check, /**< Can use the previous table but it must be checked. Note : The previous table must have been constructed by HUF_compress{1,
 +			     4}X_repeat */
-+	HUF_repeat_valid  /**< Can use the previous table and it is asumed to be valid */
++	HUF_repeat_valid  /**< Can use the previous table and it is assumed to be valid */
 +} HUF_repeat;
 +/** HUF_compress4X_repeat() :
 +*   Same as HUF_compress4X_wksp(), but considers using hufTable if *repeat != HUF_repeat_none.
@@ -11772,18 +11764,16 @@ index 0000000..6526482
 +}
 diff --git a/lib/zstd/mem.h b/lib/zstd/mem.h
 new file mode 100644
-index 0000000..3a0f34c
+index 0000000..42a697b
 --- /dev/null
 +++ b/lib/zstd/mem.h
-@@ -0,0 +1,151 @@
+@@ -0,0 +1,149 @@
 +/**
 + * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
 + * All rights reserved.
 + *
 + * This source code is licensed under the BSD-style license found in the
 + * LICENSE file in the root directory of https://github.com/facebook/zstd.
-+ * An additional grant of patent rights can be found in the PATENTS file in the
-+ * same directory.
 + *
 + * This program is free software; you can redistribute it and/or modify it under
 + * the terms of the GNU General Public License version 2 as published by the
@@ -11929,18 +11919,16 @@ index 0000000..3a0f34c
 +#endif /* MEM_H_MODULE */
 diff --git a/lib/zstd/zstd_common.c b/lib/zstd/zstd_common.c
 new file mode 100644
-index 0000000..a282624
+index 0000000..e5f06d7
 --- /dev/null
 +++ b/lib/zstd/zstd_common.c
-@@ -0,0 +1,75 @@
+@@ -0,0 +1,73 @@
 +/**
 + * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
 + * All rights reserved.
 + *
 + * This source code is licensed under the BSD-style license found in the
 + * LICENSE file in the root directory of https://github.com/facebook/zstd.
-+ * An additional grant of patent rights can be found in the PATENTS file in the
-+ * same directory.
 + *
 + * This program is free software; you can redistribute it and/or modify it under
 + * the terms of the GNU General Public License version 2 as published by the
@@ -12010,18 +11998,16 @@ index 0000000..a282624
 +}
 diff --git a/lib/zstd/zstd_internal.h b/lib/zstd/zstd_internal.h
 new file mode 100644
-index 0000000..1a79fab
+index 0000000..a0fb83e
 --- /dev/null
 +++ b/lib/zstd/zstd_internal.h
-@@ -0,0 +1,263 @@
+@@ -0,0 +1,261 @@
 +/**
 + * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
 + * All rights reserved.
 + *
 + * This source code is licensed under the BSD-style license found in the
 + * LICENSE file in the root directory of https://github.com/facebook/zstd.
-+ * An additional grant of patent rights can be found in the PATENTS file in the
-+ * same directory.
 + *
 + * This program is free software; you can redistribute it and/or modify it under
 + * the terms of the GNU General Public License version 2 as published by the
@@ -12279,18 +12265,16 @@ index 0000000..1a79fab
 +#endif /* ZSTD_CCOMMON_H_MODULE */
 diff --git a/lib/zstd/zstd_opt.h b/lib/zstd/zstd_opt.h
 new file mode 100644
-index 0000000..55e1b4c
+index 0000000..ecdd725
 --- /dev/null
 +++ b/lib/zstd/zstd_opt.h
-@@ -0,0 +1,1014 @@
+@@ -0,0 +1,1012 @@
 +/**
 + * Copyright (c) 2016-present, Przemyslaw Skibinski, Yann Collet, Facebook, Inc.
 + * All rights reserved.
 + *
 + * This source code is licensed under the BSD-style license found in the
 + * LICENSE file in the root directory of https://github.com/facebook/zstd.
-+ * An additional grant of patent rights can be found in the PATENTS file in the
-+ * same directory.
 + *
 + * This program is free software; you can redistribute it and/or modify it under
 + * the terms of the GNU General Public License version 2 as published by the
@@ -13298,4 +13282,4 @@ index 0000000..55e1b4c
 +
 +#endif /* ZSTD_OPT_H_91842398743 */
 --
-2.9.3
+2.9.5

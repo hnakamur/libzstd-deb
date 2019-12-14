@@ -1,10 +1,10 @@
-/**
+/*
  * Copyright (c) 2016-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the BSD-style license found in the
- * LICENSE file in the root directory of this source tree. An additional grant
- * of patent rights can be found in the PATENTS file in the same directory.
+ * This source code is licensed under both the BSD-style license (found in the
+ * LICENSE file in the root directory of this source tree) and the GPLv2 (found
+ * in the COPYING file in the root directory of this source tree).
  */
 
 /**
@@ -12,19 +12,15 @@
  * Fuzz targets have some common parameters passed as macros during compilation.
  * Check the documentation for each individual fuzzer for more parameters.
  *
- * @param STATEFULL_FUZZING:
+ * @param STATEFUL_FUZZING:
  *        Define this to reuse state between fuzzer runs. This can be useful to
  *        test code paths which are only executed when contexts are reused.
  *        WARNING: Makes reproducing crashes much harder.
  *        Default: Not defined.
- * @param FUZZ_RNG_SEED_SIZE:
- *        The number of bytes of the source to look at when constructing a seed
- *        for the deterministic RNG.
- *        Default: 128.
- * @param ZSTD_DEBUG:
- *        This is a parameter for the zstd library. Defining `ZSTD_DEBUG=1`
+ * @param DEBUGLEVEL:
+ *        This is a parameter for the zstd library. Defining `DEBUGLEVEL=1`
  *        enables assert() statements in the zstd library. Higher levels enable
- *        logging, so aren't recommended. Defining `ZSTD_DEBUG=1` is
+ *        logging, so aren't recommended. Defining `DEBUGLEVEL=1` is
  *        recommended.
  * @param MEM_FORCE_MEMORY_ACCESS:
  *        This flag controls how the zstd library accesses unaligned memory.
@@ -40,13 +36,17 @@
 #ifndef FUZZ_H
 #define FUZZ_H
 
-#ifndef FUZZ_RNG_SEED_SIZE
-#  define FUZZ_RNG_SEED_SIZE 128
-#endif
-
 #include <stddef.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 int LLVMFuzzerTestOneInput(const uint8_t *src, size_t size);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

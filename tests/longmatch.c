@@ -1,10 +1,11 @@
 /*
- * Copyright (c) 2016-present, Yann Collet, Facebook, Inc.
+ * Copyright (c) 2017-present, Yann Collet, Facebook, Inc.
  * All rights reserved.
  *
  * This source code is licensed under both the BSD-style license (found in the
  * LICENSE file in the root directory of this source tree) and the GPLv2 (found
  * in the COPYING file in the root directory of this source tree).
+ * You may select, at your option, one of the above-listed licenses.
  */
 
 
@@ -16,25 +17,25 @@
 #define ZSTD_STATIC_LINKING_ONLY
 #include "zstd.h"
 
-int compress(ZSTD_CStream *ctx, ZSTD_outBuffer out, const void *data, size_t size) {
+static int
+compress(ZSTD_CStream *ctx, ZSTD_outBuffer out, const void *data, size_t size)
+{
   ZSTD_inBuffer in = { data, size, 0 };
   while (in.pos < in.size) {
     ZSTD_outBuffer tmp = out;
     const size_t rc = ZSTD_compressStream(ctx, &tmp, &in);
-    if (ZSTD_isError(rc)) {
-      return 1;
-    }
+    if (ZSTD_isError(rc)) return 1;
   }
-  {
-    ZSTD_outBuffer tmp = out;
+  { ZSTD_outBuffer tmp = out;
     const size_t rc = ZSTD_flushStream(ctx, &tmp);
     if (rc != 0) { return 1; }
   }
   return 0;
 }
 
-int main(int argc, const char** argv) {
-  ZSTD_CStream *ctx;
+int main(int argc, const char** argv)
+{
+  ZSTD_CStream* ctx;
   ZSTD_parameters params;
   size_t rc;
   unsigned windowLog;
@@ -49,7 +50,7 @@ int main(int argc, const char** argv) {
   params.cParams.chainLog = 13;
   params.cParams.hashLog = 14;
   params.cParams.searchLog = 1;
-  params.cParams.searchLength = 7;
+  params.cParams.minMatch = 7;
   params.cParams.targetLength = 16;
   params.cParams.strategy = ZSTD_fast;
   windowLog = params.cParams.windowLog;
