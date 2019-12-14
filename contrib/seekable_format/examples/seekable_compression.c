@@ -1,9 +1,10 @@
-/**
- * Copyright 2017-present, Facebook, Inc.
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the license found in the
- * LICENSE-examples file in the root directory of this source tree.
+ * This source code is licensed under both the BSD-style license (found in the
+ * LICENSE file in the root directory of this source tree) and the GPLv2 (found
+ * in the COPYING file in the root directory of this source tree).
  */
 
 #include <stdlib.h>    // malloc, free, exit, atoi
@@ -100,7 +101,7 @@ static void compressFile_orDie(const char* fname, const char* outName, int cLeve
     free(buffOut);
 }
 
-static const char* createOutFilename_orDie(const char* filename)
+static char* createOutFilename_orDie(const char* filename)
 {
     size_t const inL = strlen(filename);
     size_t const outL = inL + 5;
@@ -108,7 +109,7 @@ static const char* createOutFilename_orDie(const char* filename)
     memset(outSpace, 0, outL);
     strcat(outSpace, filename);
     strcat(outSpace, ".zst");
-    return (const char*)outSpace;
+    return (char*)outSpace;
 }
 
 int main(int argc, const char** argv) {
@@ -123,8 +124,9 @@ int main(int argc, const char** argv) {
     {   const char* const inFileName = argv[1];
         unsigned const frameSize = (unsigned)atoi(argv[2]);
 
-        const char* const outFileName = createOutFilename_orDie(inFileName);
+        char* const outFileName = createOutFilename_orDie(inFileName);
         compressFile_orDie(inFileName, outFileName, 5, frameSize);
+        free(outFileName);
     }
 
     return 0;

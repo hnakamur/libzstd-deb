@@ -1,9 +1,10 @@
-/**
- * Copyright 2016-present, Yann Collet, Facebook, Inc.
+/*
+ * Copyright (c) 2017-present, Facebook, Inc.
  * All rights reserved.
  *
- * This source code is licensed under the license found in the
- * LICENSE-examples file in the root directory of this source tree.
+ * This source code is licensed under both the BSD-style license (found in the
+ * LICENSE file in the root directory of this source tree) and the GPLv2 (found
+ * in the COPYING file in the root directory of this source tree).
  */
 
 
@@ -83,7 +84,7 @@ static void fseek_orDie(FILE* file, long int offset, int origin) {
 }
 
 
-static void decompressFile_orDie(const char* fname, unsigned startOffset, unsigned endOffset)
+static void decompressFile_orDie(const char* fname, off_t startOffset, off_t endOffset)
 {
     FILE* const fin  = fopen_orDie(fname, "rb");
     FILE* const fout = stdout;
@@ -128,8 +129,8 @@ int main(int argc, const char** argv)
 
     {
         const char* const inFilename = argv[1];
-        unsigned const startOffset = (unsigned) atoi(argv[2]);
-        unsigned const endOffset = (unsigned) atoi(argv[3]);
+        off_t const startOffset = atoll(argv[2]);
+        off_t const endOffset = atoll(argv[3]);
         decompressFile_orDie(inFilename, startOffset, endOffset);
     }
 
